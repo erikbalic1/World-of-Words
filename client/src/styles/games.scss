@@ -16,6 +16,34 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
+      align-items: stretch;
+
+      .or-divider {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 1rem;
+        position: relative;
+
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          width: 40%;
+          height: 2px;
+          background: var(--border);
+        }
+
+        &::before {
+          left: 0;
+        }
+
+        &::after {
+          right: 0;
+        }
+      }
 
       .game-card {
         display: flex;
@@ -30,6 +58,14 @@
         &:hover {
           transform: translateY(-5px);
           box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .game-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
         }
 
         h3 {
@@ -64,6 +100,17 @@
     .games-container {
       h1 {
         font-size: 2rem;
+      }
+
+      .games-grid {
+        grid-template-columns: 1fr;
+
+        .or-divider {
+          &::before,
+          &::after {
+            display: none;
+          }
+        }
       }
     }
   }
