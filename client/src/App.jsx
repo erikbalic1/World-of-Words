@@ -7,6 +7,7 @@ import Games from './pages/Games'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Letteristic from './pages/Letteristic'
+import Wordle from './pages/Wordle'
 import './styles/global.scss'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/games" element={<Games />} />
               <Route path="/games/letteristic" element={<Letteristic />} />
+              <Route path="/games/wordle" element={<Wordle />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
             </Routes>
