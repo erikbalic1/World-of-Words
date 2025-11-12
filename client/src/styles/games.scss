@@ -25,6 +25,9 @@
         text-align: center;
         padding: 1rem;
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         &::before,
         &::after {
@@ -88,6 +91,21 @@
 
           &:hover {
             background: var(--accent-hover);
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .games-container {
+      .games-grid {
+        grid-template-columns: 1fr;
+        
+        .or-divider {
+          &::before,
+          &::after {
+            display: none;
           }
         }
       }
