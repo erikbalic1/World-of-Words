@@ -39,8 +39,6 @@ export default function Navbar() {
               <div className="toggle-thumb"></div>
             </div>
           </button>
-          <Link to="/auth" className="btn btn-signin" onClick={closeMenu}>Sign In</Link>
-          <Link to="/auth" className="btn btn-signup" onClick={closeMenu}>Sign Up</Link>
         </div>
 
         <button 

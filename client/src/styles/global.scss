@@ -5,9 +5,11 @@
   --text-secondary: #6c757d;
   --accent: #0ea5a4;
   --accent-hover: #0c8c8b;
+  --accent-rgb: 14, 165, 164;
   --border: #e9ecef;
   --shadow: rgba(0, 0, 0, 0.1);
   --card-bg: #ffffff;
+  --bg: #f8f9fa;
 }
 
 [data-theme='dark'] {
@@ -17,9 +19,11 @@
   --text-secondary: #adb5bd;
   --accent: #0ea5a4;
   --accent-hover: #0c8c8b;
+  --accent-rgb: 14, 165, 164;
   --border: #404040;
   --shadow: rgba(0, 0, 0, 0.3);
   --card-bg: #2d2d2d;
+  --bg: #1a1a1a;
 }
 
 * {

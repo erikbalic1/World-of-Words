@@ -6,7 +6,7 @@ import Home from './pages/Home'
 import Games from './pages/Games'
 import About from './pages/About'
 import Contact from './pages/Contact'
-import Auth from './pages/Auth'
+import Letteristic from './pages/Letteristic'
 import './styles/global.scss'
 
 function App() {
@@ -19,9 +19,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/games" element={<Games />} />
+              <Route path="/games/letteristic" element={<Letteristic />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
             </Routes>
           </main>
           <Footer />
