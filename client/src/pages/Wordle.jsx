@@ -10,11 +10,73 @@ const Wordle = () => {
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
   const [message, setMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [isUsernameSet, setIsUsernameSet] = useState(false);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [_earnedPoints, setEarnedPoints] = useState(0);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
-  // Initialize game
+  // Initialize game and load username
   useEffect(() => {
+    const savedUsername = localStorage.getItem('wordleUsername');
+    if (savedUsername) {
+      setUsername(savedUsername);
+      setIsUsernameSet(true);
+      loadUserPoints(savedUsername);
+    }
     startNewGame();
   }, []);
+
+  const loadUserPoints = (user) => {
+    const allScores = JSON.parse(localStorage.getItem('wordleScores') || '{}');
+    const userScore = allScores[user] || 0;
+    setTotalPoints(userScore);
+  };
+
+  const savePoints = (user, points) => {
+    const allScores = JSON.parse(localStorage.getItem('wordleScores') || '{}');
+    allScores[user] = (allScores[user] || 0) + points;
+    localStorage.setItem('wordleScores', JSON.stringify(allScores));
+    setTotalPoints(allScores[user]);
+  };
+
+  const calculatePoints = (guessCount) => {
+    // Point system: 6 guesses max, more points for fewer guesses
+    const pointsMap = {
+      1: 100, // Perfect guess
+      2: 80,
+      3: 60,
+      4: 40,
+      5: 20,
+      6: 10
+    };
+    return pointsMap[guessCount] || 0;
+  };
+
+  const handleUsernameSubmit = (e) => {
+    e.preventDefault();
+    if (username.trim().length >= 3) {
+      localStorage.setItem('wordleUsername', username.trim());
+      setIsUsernameSet(true);
+      loadUserPoints(username.trim());
+    } else {
+      setMessage('Username must be at least 3 characters!');
+      setTimeout(() => setMessage(''), 2000);
+    }
+  };
+
+  const changeUsername = () => {
+    setIsUsernameSet(false);
+    setUsername('');
+    localStorage.removeItem('wordleUsername');
+  };
+
+  const getLeaderboard = () => {
+    const allScores = JSON.parse(localStorage.getItem('wordleScores') || '{}');
+    return Object.entries(allScores)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10);
+  };
 
   const startNewGame = () => {
     const word = getRandomWord();
@@ -25,6 +87,7 @@ const Wordle = () => {
     setGameOver(false);
     setGameWon(false);
     setMessage('');
+    setEarnedPoints(0);
   };
 
   const handleSubmitGuess = useCallback(() => {
@@ -48,7 +111,12 @@ const Wordle = () => {
     if (currentGuess === targetWord) {
       setGameWon(true);
       setGameOver(true);
-      setMessage('🎉 Congratulations! You guessed the word!');
+      const points = calculatePoints(currentRow + 1);
+      setEarnedPoints(points);
+      if (isUsernameSet) {
+        savePoints(username, points);
+      }
+      setMessage(`🎉 Congratulations! You guessed the word! +${points} points`);
       return;
     }
 
@@ -61,12 +129,12 @@ const Wordle = () => {
 
     setCurrentRow(currentRow + 1);
     setCurrentGuess('');
-  }, [currentGuess, currentRow, guesses, targetWord]);
+  }, [currentGuess, currentRow, guesses, targetWord, isUsernameSet, username]);
 
   // Handle keyboard input
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (gameOver) return;
+      if (gameOver || !isUsernameSet) return;
 
       if (e.key === 'Enter') {
         handleSubmitGuess();
@@ -79,7 +147,7 @@ const Wordle = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentGuess, gameOver, currentRow, handleSubmitGuess]);
+  }, [currentGuess, gameOver, currentRow, handleSubmitGuess, isUsernameSet]);
 
   const getLetterColor = (letter, index, word) => {
     if (!word) return '';
@@ -193,39 +261,95 @@ const Wordle = () => {
         </p>
       </div>
 
-      {message && (
-        <div className={`wordle-message ${gameWon ? 'success' : gameOver ? 'error' : 'info'}`}>
-          {message}
+      {!isUsernameSet ? (
+        <div className="username-modal">
+          <h2>Enter Your Username</h2>
+          <form onSubmit={handleUsernameSubmit}>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter username (min 3 characters)"
+              className="username-input"
+              autoFocus
+            />
+            <button type="submit" className="username-submit-btn">
+              Start Playing
+            </button>
+          </form>
         </div>
+      ) : (
+        <>
+          <div className="user-stats">
+            <div className="stat-item">
+              <span className="stat-label">Player:</span>
+              <span className="stat-value">{username}</span>
+              <button className="change-username-btn" onClick={changeUsername}>
+                Change
+              </button>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Total Points:</span>
+              <span className="stat-value">{totalPoints}</span>
+            </div>
+            <button 
+              className="leaderboard-toggle-btn"
+              onClick={() => setShowLeaderboard(!showLeaderboard)}
+            >
+              {showLeaderboard ? 'Hide' : 'Show'} Leaderboard
+            </button>
+          </div>
+
+          {showLeaderboard && (
+            <div className="leaderboard">
+              <h3>Top 10 Players</h3>
+              <div className="leaderboard-list">
+                {getLeaderboard().map(([name, points], index) => (
+                  <div key={name} className={`leaderboard-item ${name === username ? 'current-user' : ''}`}>
+                    <span className="rank">#{index + 1}</span>
+                    <span className="name">{name}</span>
+                    <span className="points">{points} pts</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {message && (
+            <div className={`wordle-message ${gameWon ? 'success' : gameOver ? 'error' : 'info'}`}>
+              {message}
+            </div>
+          )}
+
+          <div className="wordle-game">
+            {renderGrid()}
+            {renderKeyboard()}
+          </div>
+
+          {gameOver && (
+            <div className="wordle-controls">
+              <button className="new-game-btn" onClick={startNewGame}>
+                Play Again
+              </button>
+            </div>
+          )}
+
+          <div className="wordle-legend">
+            <div className="legend-item">
+              <div className="legend-box correct"></div>
+              <span>Correct position</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-box present"></div>
+              <span>Wrong position</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-box absent"></div>
+              <span>Not in word</span>
+            </div>
+          </div>
+        </>
       )}
-
-      <div className="wordle-game">
-        {renderGrid()}
-        {renderKeyboard()}
-      </div>
-
-      {gameOver && (
-        <div className="wordle-controls">
-          <button className="new-game-btn" onClick={startNewGame}>
-            Play Again
-          </button>
-        </div>
-      )}
-
-      <div className="wordle-legend">
-        <div className="legend-item">
-          <div className="legend-box correct"></div>
-          <span>Correct position</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-box present"></div>
-          <span>Wrong position</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-box absent"></div>
-          <span>Not in word</span>
-        </div>
-      </div>
     </div>
   );
 };
