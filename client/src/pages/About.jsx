@@ -30,7 +30,7 @@ export default function About() {
                   Faculty of Informatics
                 </p>
                 <div className="member-photo">
-                  <img src="src/contents/balic-erik.jpg" alt="Balic Erik Gabor" />
+                  <img src="/contents/balic-erik.jpg" alt="Balic Erik Gabor" />
                 </div>
                 <p className="member-description">
                   Passionate about web development and creating engaging user experiences. 
@@ -53,7 +53,7 @@ export default function About() {
                   Faculty of Informatics
                 </p>
                 <div className="member-photo">
-                  <img src="src/contents/kasztl-richard.png" alt="Kasztl Richard" />
+                  <img src="/contents/kasztl-richard.png" alt="Kasztl Richard" />
                 </div>
                 <p className="member-description">
                   Focused on backend development and database management. 
@@ -76,7 +76,7 @@ export default function About() {
                   Faculty of Informatics
                 </p>
                 <div className="member-photo">
-                  <img src="src/contents/szabo-bence-botond.png" alt="Szabó Bence Botond" />
+                  <img src="/contents/szabo-bence-botond.png" alt="Szabó Bence Botond" />
                 </div>
                 <p className="member-description">
                   Specialized in full-stack development and API integration. 
