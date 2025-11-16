@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import '../styles/games.scss'
-import letteristicImg from '../../contents/letteristic.png'
-import wordleImg from '../../contents/wordle.png'
+import letteristicImg from '../../public/contents/letteristic.png'
+import wordleImg from '../../public/contents/wordle.png'
 
 export default function Games() {
   return (
