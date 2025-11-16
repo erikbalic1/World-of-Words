@@ -4,17 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Document(collection = "Countries")
+@Document(collection = "Cities")
 @ToString
-public class CountryList {
+public class City {
 
-    private List<String> countries;
+    @Indexed
+    private String name;
 
 }
