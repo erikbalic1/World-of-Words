@@ -1,5 +1,6 @@
 package hu.unideb.inf.worldofwords.web;
 
+import hu.unideb.inf.worldofwords.model.GameResultDTO;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,11 +22,12 @@ public class GameControllerImpl implements GameController{
     /**
      * Used to submit the given answers for the game.
      *
-     * @param given the words given by the player
+     * @param givenResult the words given by the player
      */
     @Override
-    public void submit(@NonNull String given) {
-
+    public GameResultDTO submit(@NonNull GameResultDTO givenResult) {
+        //!!!!!!!!!!!!!
+        return givenResult;
     }
 
     /**

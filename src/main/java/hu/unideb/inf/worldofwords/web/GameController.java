@@ -1,5 +1,6 @@
 package hu.unideb.inf.worldofwords.web;
 
+import hu.unideb.inf.worldofwords.model.GameResultDTO;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +16,11 @@ public interface GameController {
 
     /**
      * Used to submit the given answers for the game.
-     * @param given the words given by the player
+     *
+     * @param givenResult the words given by the player
      */
     @PostMapping("/game/submit")
-    void submit(@NonNull @RequestBody String given);
+    GameResultDTO submit(@RequestBody @NonNull GameResultDTO givenResult);
 
     /**
      * Used to get the current score of the player.
