@@ -20,7 +20,7 @@ public interface GameController {
      * @param givenResult the words given by the player
      */
     @PostMapping("/game/submit")
-    GameResultDTO submit(@RequestBody @NonNull GameResultDTO givenResult);
+    int submit(@RequestBody @NonNull GameResultDTO givenResult);
 
     /**
      * Used to get the current score of the player.

@@ -25,9 +25,9 @@ public class GameControllerImpl implements GameController{
      * @param givenResult the words given by the player
      */
     @Override
-    public GameResultDTO submit(@NonNull GameResultDTO givenResult) {
+    public int submit(@NonNull GameResultDTO givenResult) {
         //!!!!!!!!!!!!!
-        return givenResult;
+        return 67;
     }
 
     /**

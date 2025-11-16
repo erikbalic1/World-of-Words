@@ -7,6 +7,8 @@ import lombok.Builder;
 @AllArgsConstructor
 public class GameResultDTO {
 
+    private final String username;
+
     private final char startingLetter;
 
     private final String countryGiven;
