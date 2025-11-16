@@ -4,17 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Document(collection = "GirlNames")
+@Document(collection = "Animals")
 @ToString
-public class GirlNamesList {
+public class Animal {
 
-    private List<String> girlNames;
+    @Indexed(unique = true)
+    private String name;
 
 }

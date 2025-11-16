@@ -6,15 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Document(collection = "Animals")
+@Document(collection = "BoyNames")
 @ToString
-public class AnimalList {
+public class BoyName {
 
-    private List<String> animals;
-
+    private String name;
 }
