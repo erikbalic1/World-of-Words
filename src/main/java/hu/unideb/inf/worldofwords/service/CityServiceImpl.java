@@ -24,5 +24,15 @@ public class CityServiceImpl implements CityService {
         return repository.findAll().stream().map(City::getName).collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> searchCities(String startingLetter, String containing) {
+        return repository.findAll()
+                .stream()
+                .map(City::getName)
+                .filter(name -> startingLetter == null || name.toLowerCase().startsWith(startingLetter.toLowerCase()))
+                .filter(name -> containing == null || name.toLowerCase().contains(containing.toLowerCase()))
+                .toList();
+    }
+
 
 }

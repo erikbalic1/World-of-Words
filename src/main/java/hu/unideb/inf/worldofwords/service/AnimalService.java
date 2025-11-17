@@ -7,4 +7,7 @@ public interface AnimalService {
     boolean isValidAnimal(String animal);
 
     List<String> allAnimals();
+
+    List<String> searchAnimals(String startingLetter, String containing);
+
 }

@@ -29,4 +29,15 @@ public class LeaderboardServiceImpl implements LeaderboardService {
     public Optional<LeaderboardEntry> findByPlayerName(String playerName) {
         return repository.findByPlayerName(playerName);
     }
+
+    @Override
+    public void deleteByPlayerName(String playerName) {
+        Optional<LeaderboardEntry> entry = repository.findByPlayerName(playerName);
+        entry.ifPresent(repository::delete);
+    }
+
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
 }

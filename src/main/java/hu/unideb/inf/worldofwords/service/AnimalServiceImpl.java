@@ -16,12 +16,22 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public boolean isValidAnimal(String animal) {
-        return repository.existsAnimalByName(animal);
+        return repository.existsAnimalByNameIgnoreCase(animal);
     }
 
     @Override
     public List<String> allAnimals() {
         return repository.findAll().stream().map(Animal::getName).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> searchAnimals(String startingLetter, String containing) {
+        return repository.findAll()
+                .stream()
+                .map(Animal::getName)
+                .filter(name -> startingLetter == null || name.toLowerCase().startsWith(startingLetter.toLowerCase()))
+                .filter(name -> containing == null || name.toLowerCase().contains(containing.toLowerCase()))
+                .toList();
     }
 
 }

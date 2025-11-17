@@ -8,4 +8,6 @@ public interface CountryService {
 
     List<String> allCountries();
 
+    List<String> searchCountries(String startingLetter, String containing);
+
 }

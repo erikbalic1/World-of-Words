@@ -7,4 +7,6 @@ public interface BoyNamesService {
     boolean isValidBoyName(String boyName);
 
     List<String> allBoyNames();
+
+    List<String> searchBoyNames(String startingLetter, String containing);
 }

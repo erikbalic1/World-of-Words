@@ -16,12 +16,22 @@ public class BoyNamesServiceImpl implements BoyNamesService {
 
     @Override
     public boolean isValidBoyName(String boyName) {
-        return repository.existsBoyNameByName(boyName);
+        return repository.existsBoyNameByNameIgnoreCase(boyName);
     }
 
     @Override
     public List<String> allBoyNames() {
         return repository.findAll().stream().map(BoyName::getName).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> searchBoyNames(String startingLetter, String containing) {
+        return repository.findAll()
+                .stream()
+                .map(BoyName::getName)
+                .filter(name -> startingLetter == null || name.toLowerCase().startsWith(startingLetter.toLowerCase()))
+                .filter(name -> containing == null || name.toLowerCase().contains(containing.toLowerCase()))
+                .toList();
     }
 
 }

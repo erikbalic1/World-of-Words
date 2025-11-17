@@ -21,7 +21,7 @@ public class GameCoordinator {
     private final ScoreCalculator scoreCalculator;
     
     private final String[] categories = new String[]{
-        "Country", "City"/*, "Plant"*/, "Animal", "Boy name", "Girl name"
+        "Country", "City", "Animal", "Boy name", "Girl name"
     };
     
     private int cumulativeScore = 0;
@@ -37,7 +37,14 @@ public class GameCoordinator {
         this.scoreCalculator = new ScoreCalculator();
     }
 
-    private int getScore(
+    public GameCoordinator() {
+        ioHandler = null;
+        letterGenerator = null;
+        scoreValidator = new ScoreValidator();
+        scoreCalculator = new ScoreCalculator();
+    }
+
+    public int getScore(
             char startingLetter,
             String countryGiven,
             long countryTimeInMillis,

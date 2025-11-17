@@ -2,6 +2,7 @@ package hu.unideb.inf.worldofwords.web;
 
 import hu.unideb.inf.worldofwords.service.GirlNamesService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -13,13 +14,18 @@ public class GirlNameControllerImpl implements GirlNameController {
     private final GirlNamesService service;
 
     @Override
-    public List<String> allGirlNames() {
-        return service.allGirlNames();
+    public ResponseEntity<List<String>> allGirlNames() {
+        return ResponseEntity.ok(service.allGirlNames());
     }
 
     @Override
-    public boolean testGirlNameExists(String girlName) {
-        return service.isValidGirlName(girlName);
+    public ResponseEntity<Boolean> checkGirlNameExists(String name) {
+        return ResponseEntity.ok(service.isValidGirlName(name));
+    }
+
+    @Override
+    public ResponseEntity<List<String>> searchGirlNames(String startingLetter, String containing) {
+        return ResponseEntity.ok(service.searchGirlNames(startingLetter, containing));
     }
 
 }
