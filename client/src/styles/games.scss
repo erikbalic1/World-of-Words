@@ -57,6 +57,7 @@
         box-shadow: 0 4px 12px var(--shadow);
         text-align: center;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        min-height: 500px; // vagy a kívánt magasság
 
         &:hover {
           transform: translateY(-5px);

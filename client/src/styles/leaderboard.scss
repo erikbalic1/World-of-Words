@@ -1,0 +1,152 @@
+.leaderboard-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+}
+
+.leaderboard-container {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+
+  &.error {
+    color: #e74c3c;
+  }
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+
+      &:first-child {
+        border-radius: 8px 0 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 8px 0 0;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--bg-hover, rgba(0, 0, 0, 0.02));
+        transform: translateX(4px);
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.top-1 {
+        background: rgba(255, 215, 0, 0.15);
+      }
+
+      &.top-2 {
+        background: rgba(192, 192, 192, 0.15);
+      }
+
+      &.top-3 {
+        background: rgba(205, 127, 50, 0.15);
+      }
+    }
+
+    td {
+      padding: 1rem;
+      color: var(--text-primary);
+
+      &.rank {
+        font-size: 1.5rem;
+        font-weight: bold;
+        width: 80px;
+        text-align: center;
+      }
+
+      &.player {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      &.score {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .leaderboard-header h1 {
+    font-size: 2rem;
+  }
+
+  .leaderboard-container {
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  .leaderboard-table {
+    font-size: 0.9rem;
+
+    thead th,
+    tbody td {
+      padding: 0.75rem 0.5rem;
+    }
+
+    tbody td {
+      &.rank {
+        font-size: 1.2rem;
+        width: 60px;
+      }
+
+      &.player {
+        font-size: 1rem;
+      }
+
+      &.score {
+        font-size: 1rem;
+      }
+    }
+  }
+}

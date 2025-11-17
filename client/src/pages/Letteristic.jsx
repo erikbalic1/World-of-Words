@@ -7,13 +7,13 @@ const CATEGORIES = [
   { name: 'City', placeholder: 'Enter a city name...' },
   { name: 'Boy Name', placeholder: 'Enter a boy\'s name...' },
   { name: 'Girl Name', placeholder: 'Enter a girl\'s name...' },
-  { name: 'Plants', placeholder: 'Enter a plant name...' },
   { name: 'Animals', placeholder: 'Enter an animal name...' }
 ]
 
 const GAME_TIME = 60 // seconds per round
 const TIME_BONUS_MULTIPLIER = 2 // points multiplier for fast answers
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+var scoreFromBackend = 0;
 
 export default function Letteristic() {
   const navigate = useNavigate()
@@ -126,7 +126,7 @@ export default function Letteristic() {
     return Math.round(basePoints + timeBonus)
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const trimmedAnswer = currentInput.trim()
     
@@ -156,7 +156,32 @@ export default function Letteristic() {
     // Move to next category or finish game
     if (currentCategoryIndex < CATEGORIES.length - 1) {
       setCurrentCategoryIndex(prev => prev + 1)
-    } else {
+    } else  {
+      
+      await fetch('http://localhost:8082/game/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username,
+          startingLetter: currentLetter,
+          countryGiven: answers['Country'] ? answers['Country'].answer : null,
+          countryTimeInMillis: answers['Country'] ? answers['Country'].time : null,
+          cityGiven: answers['City'] ? answers['City'].answer : null,
+          cityTimeInMillis: answers['City'] ? answers['City'].time : null,
+          boyNameGiven: answers['Boy Name'] ? answers['Boy Name'].answer : null,
+          boyNameTimeInMillis: answers['Boy Name'] ? answers['Boy Name'].time : null,
+          girlNameGiven: answers['Girl Name'] ? answers['Girl Name'].answer : null,
+          girlNameTimeInMillis: answers['Girl Name'] ? answers['Girl Name'].time : null,
+          animalGiven: answers['Animal'] ? answers['Animal'].answer : null,
+          animalTimeInMillis: answers['Animal'] ? answers['Animal'].time : null
+        })
+      })
+      .then(response => scoreFromBackend = response.json())
+      .then(data => {
+        console.log('Score submitted successfully:', data);
+      })
+      .catch((error) => {
+        console.error('Error submitting score:', error);
+      });
       setGameState('finished')
     }
   }
@@ -375,7 +400,7 @@ export default function Letteristic() {
             <h1>Game Over!</h1>
             <div className="final-score">
               <h2>Final Score</h2>
-              <div className="score-value">{score}</div>
+              <div className="score-value">{scoreFromBackend}</div>
               <p className="score-label">points</p>
             </div>
 
