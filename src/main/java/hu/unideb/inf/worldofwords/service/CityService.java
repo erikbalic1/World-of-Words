@@ -8,4 +8,6 @@ public interface CityService {
 
     List<String> allCities();
 
+    List<String> searchCities(String startingLetter, String containing);
+
 }

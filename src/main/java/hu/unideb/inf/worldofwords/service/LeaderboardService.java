@@ -13,4 +13,8 @@ public interface LeaderboardService {
 
     Optional<LeaderboardEntry> findByPlayerName(String playerName);
 
+    void deleteByPlayerName(String playerName);
+
+    void deleteAll();
+
 }

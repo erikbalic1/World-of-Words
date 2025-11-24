@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AnimalRepository extends MongoRepository<Animal, String> {
-    boolean existsAnimalByName(String name);
+    boolean existsAnimalByNameIgnoreCase(String name);
 }

@@ -8,4 +8,6 @@ public interface GirlNamesService {
 
     List<String> allGirlNames();
 
+    List<String> searchGirlNames(String startingLetter, String containing);
+
 }

@@ -21,7 +21,7 @@ public class GameCoordinator {
     private final ScoreCalculator scoreCalculator;
     
     private final String[] categories = new String[]{
-        "Country", "City"/*, "Plant"*/, "Animal", "Boy name", "Girl name"
+        "Country", "City", "Animal", "Boy name", "Girl name"
     };
     
     private int cumulativeScore = 0;
@@ -36,7 +36,49 @@ public class GameCoordinator {
         this.scoreValidator = scoreValidator;
         this.scoreCalculator = new ScoreCalculator();
     }
-    
+
+    public GameCoordinator() {
+        ioHandler = null;
+        letterGenerator = null;
+        scoreValidator = new ScoreValidator();
+        scoreCalculator = new ScoreCalculator();
+    }
+
+    public int getScore(
+            char startingLetter,
+            String countryGiven,
+            long countryTimeInMillis,
+            String cityGiven,
+            long cityTimeInMillis,
+            String boyNameGiven,
+            long boyTimeInMillis,
+            String girlNameGiven,
+            long girlTimeInMillis,
+            String animalGiven,
+            long animalTimeInMillis
+    ) {
+        int totalScore = 0;
+
+        totalScore += scoreCalculator.calculateAnswerPoints(countryGiven,
+                scoreValidator.validateWord(countryGiven, startingLetter, "Country"),
+                countryTimeInMillis);
+        totalScore += scoreCalculator.calculateAnswerPoints(cityGiven,
+                scoreValidator.validateWord(cityGiven, startingLetter, "City"),
+                cityTimeInMillis);
+        totalScore += scoreCalculator.calculateAnswerPoints(boyNameGiven,
+                scoreValidator.validateWord(boyNameGiven, startingLetter, "Boy name"),
+                boyTimeInMillis);
+        totalScore += scoreCalculator.calculateAnswerPoints(girlNameGiven,
+                scoreValidator.validateWord(girlNameGiven, startingLetter, "Girl name"),
+                girlTimeInMillis);
+        totalScore += scoreCalculator.calculateAnswerPoints(animalGiven,
+                scoreValidator.validateWord(animalGiven, startingLetter, "Animal"),
+                animalTimeInMillis);
+
+        return totalScore;
+
+    }
+
     /**
      * Start the game: welcome, get username, play rounds, and save scores.
      */
