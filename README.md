@@ -8,7 +8,7 @@ The game challenges players to supply words that belong to selected categories (
 The `gameReading.Main` class provides the possibility to play the game from terminal.
 
 ## Prerequisites
-- Java 17+ (or Java 11 if your environment requires it)
+- Java 17+ (or Java 11 if your environment requires it)(21 user for development)
 - Maven 3.6+
 - IntelliJ IDEA (project tested in IntelliJ IDEA 2024.3.7)
 - (Optional) Git
