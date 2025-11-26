@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/letteristic.scss'
 
@@ -11,9 +11,7 @@ const CATEGORIES = [
 ]
 
 const GAME_TIME = 60 // seconds per round
-const TIME_BONUS_MULTIPLIER = 2 // points multiplier for fast answers
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-var scoreFromBackend = 0;
 
 export default function Letteristic() {
   const navigate = useNavigate()
@@ -23,12 +21,12 @@ export default function Letteristic() {
   const [usedUsernames, setUsedUsernames] = useState([]) // Simulating stored usernames
   const [animatingLetter, setAnimatingLetter] = useState('')
   const [currentLetter, setCurrentLetter] = useState('')
+  const [finalLetterRevealed, setFinalLetterRevealed] = useState(false)
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0)
   const [answers, setAnswers] = useState({})
   const [currentInput, setCurrentInput] = useState('')
   const [timeLeft, setTimeLeft] = useState(GAME_TIME)
-  const [score, setScore] = useState(0)
-  const [answerTime, setAnswerTime] = useState(0)
+  const [finalScore, setFinalScore] = useState(0)
   const [error, setError] = useState('')
 
   const getRandomLetter = () => {
@@ -70,17 +68,16 @@ export default function Letteristic() {
 
   const startGame = () => {
     setGameState('letterAnimation')
-    setScore(0)
+    setFinalScore(0)
     setAnswers({})
     setCurrentCategoryIndex(0)
     setTimeLeft(GAME_TIME)
-    setAnswerTime(0)
     setCurrentInput('')
     setError('')
+    setFinalLetterRevealed(false)
     
     // Start letter animation
     const finalLetter = getRandomLetter()
-    setCurrentLetter(finalLetter)
     
     // Animate through alphabet
     let animationCount = 0
@@ -108,6 +105,8 @@ export default function Letteristic() {
             // Final reveal of the chosen letter with a longer display
             setTimeout(() => {
               setAnimatingLetter(finalLetter)
+              setCurrentLetter(finalLetter)
+              setFinalLetterRevealed(true)
               // Keep the letter displayed for 2 seconds before moving to gameplay
               setTimeout(() => {
                 setGameState('playing')
@@ -118,13 +117,6 @@ export default function Letteristic() {
       }
     }, baseSpeed)
   }
-
-  const calculatePoints = useCallback((timeTaken) => {
-    const basePoints = 10
-    // Bonus points for answering quickly (first 10 seconds get bonus)
-    const timeBonus = Math.max(0, (10 - timeTaken) * TIME_BONUS_MULTIPLIER)
-    return Math.round(basePoints + timeBonus)
-  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -141,47 +133,45 @@ export default function Letteristic() {
     }
 
     const category = CATEGORIES[currentCategoryIndex].name
-    const points = calculatePoints(answerTime)
     
     setAnswers(prev => ({
       ...prev,
-      [category]: { answer: trimmedAnswer, points, time: answerTime }
+      [category]: { answer: trimmedAnswer }
     }))
     
-    setScore(prev => prev + points)
     setError('')
     setCurrentInput('')
-    setAnswerTime(0)
 
     // Move to next category or finish game
     if (currentCategoryIndex < CATEGORIES.length - 1) {
       setCurrentCategoryIndex(prev => prev + 1)
-    } else  {
-      
-      await fetch('http://localhost:8082/game/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username,
-          startingLetter: currentLetter,
-          countryGiven: answers['Country'] ? answers['Country'].answer : null,
-          countryTimeInMillis: answers['Country'] ? answers['Country'].time : null,
-          cityGiven: answers['City'] ? answers['City'].answer : null,
-          cityTimeInMillis: answers['City'] ? answers['City'].time : null,
-          boyNameGiven: answers['Boy Name'] ? answers['Boy Name'].answer : null,
-          boyNameTimeInMillis: answers['Boy Name'] ? answers['Boy Name'].time : null,
-          girlNameGiven: answers['Girl Name'] ? answers['Girl Name'].answer : null,
-          girlNameTimeInMillis: answers['Girl Name'] ? answers['Girl Name'].time : null,
-          animalGiven: answers['Animal'] ? answers['Animal'].answer : null,
-          animalTimeInMillis: answers['Animal'] ? answers['Animal'].time : null
+    } else {
+      try {
+        const response = await fetch('http://localhost:8082/api/game/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            username: username,
+            startingLetter: currentLetter,
+            countryGiven: answers['Country'] ? answers['Country'].answer : null,
+            countryTimeInMillis: null,
+            cityGiven: answers['City'] ? answers['City'].answer : null,
+            cityTimeInMillis: null,
+            boyNameGiven: answers['Boy Name'] ? answers['Boy Name'].answer : null,
+            boyNameTimeInMillis: null,
+            girlNameGiven: answers['Girl Name'] ? answers['Girl Name'].answer : null,
+            girlNameTimeInMillis: null,
+            animalGiven: trimmedAnswer,
+            animalTimeInMillis: null
+          })
         })
-      })
-      .then(response => scoreFromBackend = response.json())
-      .then(data => {
-        console.log('Score submitted successfully:', data);
-      })
-      .catch((error) => {
-        console.error('Error submitting score:', error);
-      });
+        const data = await response.json()
+        setFinalScore(data.score || 0)
+        console.log('Score submitted successfully:', data)
+      } catch (error) {
+        console.error('Error submitting score:', error)
+        setFinalScore(0)
+      }
       setGameState('finished')
     }
   }
@@ -190,12 +180,11 @@ export default function Letteristic() {
     const category = CATEGORIES[currentCategoryIndex].name
     setAnswers(prev => ({
       ...prev,
-      [category]: { answer: 'Skipped', points: 0, time: 0 }
+      [category]: { answer: 'Skipped' }
     }))
     
     setError('')
     setCurrentInput('')
-    setAnswerTime(0)
 
     if (currentCategoryIndex < CATEGORIES.length - 1) {
       setCurrentCategoryIndex(prev => prev + 1)
@@ -216,7 +205,6 @@ export default function Letteristic() {
         }
         return prev - 1
       })
-      setAnswerTime(prev => prev + 1)
     }, 1000)
 
     return () => clearInterval(timer)
@@ -312,7 +300,7 @@ export default function Letteristic() {
                 {animatingLetter}
               </div>
             </div>
-            {animatingLetter === currentLetter && currentLetter ? (
+            {finalLetterRevealed ? (
               <p className="animation-text final">
                 <strong>Your Letter: {currentLetter}</strong>
               </p>
@@ -329,10 +317,6 @@ export default function Letteristic() {
                 <div className="letter-display">
                   <span className="label">Letter:</span>
                   <span className="letter">{currentLetter}</span>
-                </div>
-                <div className="score-display">
-                  <span className="label">Score:</span>
-                  <span className="score">{score}</span>
                 </div>
                 <div className={`timer ${timeLeft <= 10 ? 'warning' : ''}`}>
                   <span className="label">Time:</span>
@@ -386,7 +370,6 @@ export default function Letteristic() {
                     <div key={category} className="answered-item">
                       <span className="category">{category}:</span>
                       <span className="answer">{data.answer}</span>
-                      <span className="points">+{data.points} pts</span>
                     </div>
                   ))}
                 </div>
@@ -400,7 +383,7 @@ export default function Letteristic() {
             <h1>Game Over!</h1>
             <div className="final-score">
               <h2>Final Score</h2>
-              <div className="score-value">{scoreFromBackend}</div>
+              <div className="score-value">{finalScore}</div>
               <p className="score-label">points</p>
             </div>
 
@@ -413,16 +396,10 @@ export default function Letteristic() {
                     <div key={index} className={`result-item ${answer ? 'answered' : 'missed'}`}>
                       <div className="result-header">
                         <span className="category">{category.name}</span>
-                        {answer && <span className="points">+{answer.points} pts</span>}
                       </div>
                       <div className="result-answer">
                         {answer ? answer.answer : 'Not answered'}
                       </div>
-                      {answer && answer.time > 0 && (
-                        <div className="result-time">
-                          Answered in {answer.time} seconds
-                        </div>
-                      )}
                     </div>
                   )
                 })}

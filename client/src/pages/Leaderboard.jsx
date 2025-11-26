@@ -14,7 +14,7 @@ const Leaderboard = () => {
   const loadLeaderboard = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8082/testLeaderboard');
+      const response = await fetch('http://localhost:8082/api/leaderboard');
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard');
       }
