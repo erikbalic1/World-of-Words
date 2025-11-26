@@ -28,6 +28,7 @@ export default function Letteristic() {
   const [timeLeft, setTimeLeft] = useState(GAME_TIME)
   const [finalScore, setFinalScore] = useState(0)
   const [error, setError] = useState('')
+  const [answerStartTime, setAnswerStartTime] = useState(null)
 
   const getRandomLetter = () => {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVYZ'
@@ -131,15 +132,21 @@ export default function Letteristic() {
       return
     }
 
+    // Calculate time taken in milliseconds from when user started typing
+    const timeInMillis = answerStartTime ? Date.now() - answerStartTime : 0
+
     const category = CATEGORIES[currentCategoryIndex].name
     
-    setAnswers(prev => ({
-      ...prev,
-      [category]: { answer: trimmedAnswer }
-    }))
+    const updatedAnswers = {
+      ...answers,
+      [category]: { answer: trimmedAnswer, timeInMillis }
+    }
+    
+    setAnswers(updatedAnswers)
     
     setError('')
     setCurrentInput('')
+    setAnswerStartTime(null) // Reset timer for next answer
 
     // Move to next category or finish game
     if (currentCategoryIndex < CATEGORIES.length - 1) {
@@ -171,12 +178,12 @@ export default function Letteristic() {
         console.error('Error submitting score:', error)
         setFinalScore(0)
       }*/
-      await submitAnswer()
+      await submitAnswer(updatedAnswers)
       setGameState('finished')
     }
   }
 
-  const submitAnswer = async () =>{
+  const submitAnswer = async (finalAnswers = answers) =>{
     try {
         const response = await fetch('http://localhost:8082/api/game/submit', {
           method: 'POST',
@@ -184,16 +191,16 @@ export default function Letteristic() {
           body: JSON.stringify({ 
             username: username,
             startingLetter: currentLetter,
-            countryGiven: answers['Country'] ? answers['Country'].answer : null,
-            countryTimeInMillis: null,
-            cityGiven: answers['City'] ? answers['City'].answer : null,
-            cityTimeInMillis: null,
-            boyNameGiven: answers['Boy Name'] ? answers['Boy Name'].answer : null,
-            boyNameTimeInMillis: null,
-            girlNameGiven: answers['Girl Name'] ? answers['Girl Name'].answer : null,
-            girlNameTimeInMillis: null,
-            animalGiven: answers['Animals'] ? answers['Animals'].answer : null,
-            animalTimeInMillis: null
+            countryGiven: finalAnswers['Country']?.answer || null,
+            countryTimeInMillis: finalAnswers['Country']?.timeInMillis || 0,
+            cityGiven: finalAnswers['City']?.answer || null,
+            cityTimeInMillis: finalAnswers['City']?.timeInMillis || 0,
+            boyNameGiven: finalAnswers['Boy Name']?.answer || null,
+            boyTimeInMillis: finalAnswers['Boy Name']?.timeInMillis || 0,
+            girlNameGiven: finalAnswers['Girl Name']?.answer || null,
+            girlTimeInMillis: finalAnswers['Girl Name']?.timeInMillis || 0,
+            animalGiven: finalAnswers['Animals']?.answer || null,
+            animalTimeInMillis: finalAnswers['Animals']?.timeInMillis || 0
           })
         })
         const data = await response.json()
@@ -207,18 +214,21 @@ export default function Letteristic() {
 
   const skipCategory = async () => {
     const category = CATEGORIES[currentCategoryIndex].name
-    setAnswers(prev => ({
-      ...prev,
-      [category]: { answer: '' }
-    }))
+    const updatedAnswers = {
+      ...answers,
+      [category]: { answer: '', timeInMillis: 0 }
+    }
+    
+    setAnswers(updatedAnswers)
     
     setError('')
     setCurrentInput('')
+    setAnswerStartTime(null) // Reset timer
 
     if (currentCategoryIndex < CATEGORIES.length - 1) {
       setCurrentCategoryIndex(prev => prev + 1)
     } else {
-      await submitAnswer()
+      await submitAnswer(updatedAnswers)
       setGameState('finished')
     }
   }
@@ -375,6 +385,10 @@ export default function Letteristic() {
                   type="text"
                   value={currentInput}
                   onChange={(e) => {
+                    // Start timer when user first types
+                    if (!answerStartTime && e.target.value.length === 1) {
+                      setAnswerStartTime(Date.now())
+                    }
                     setCurrentInput(e.target.value)
                     setError('')
                   }}
