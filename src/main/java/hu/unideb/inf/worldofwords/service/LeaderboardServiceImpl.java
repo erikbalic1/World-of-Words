@@ -35,9 +35,4 @@ public class LeaderboardServiceImpl implements LeaderboardService {
         Optional<LeaderboardEntry> entry = repository.findByPlayerName(playerName);
         entry.ifPresent(repository::delete);
     }
-
-    @Override
-    public void deleteAll() {
-        repository.deleteAll();
-    }
 }

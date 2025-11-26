@@ -1,0 +1,206 @@
+.about {
+  padding: 4rem 2rem;
+
+  .about-container {
+    max-width: 1400px; 
+    width: 90%;
+    margin: 0 auto;
+    padding: 2rem;
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      color: var(--accent);
+    }
+
+    .about-content {
+      background: var(--card-bg);
+      padding: 3rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+
+      p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      .team {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border);
+
+        h2 {
+          font-size: 1.8rem;
+          margin-bottom: 1rem;
+          color: var(--accent);
+        }
+
+        p {
+          color: var(--text-secondary);
+        }
+      }
+    }
+  }
+
+  .project-description {
+    margin-bottom: 3rem;
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary, #333);
+    }
+
+    p {
+      line-height: 1.8;
+      color: var(--text-secondary, #555);
+    }
+  }
+
+  .team-section {
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--text-primary, #333);
+    }
+  }
+
+  .team-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .team-card {
+    background: var(--card-bg, white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .member-name {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary, #333);
+    }
+
+    .member-role {
+      font-size: 0.9rem;
+      color: var(--text-secondary, #777);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .member-photo {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid var(--border, #f0f0f0);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .member-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-secondary, #555);
+      margin-bottom: 1.5rem;
+    }
+
+    .github-link {
+      display: inline-block;
+      padding: 0.6rem 1.5rem;
+      background-color: #24292e;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #1a1e22;
+      }
+    }
+  }
+
+  // Dark theme support
+  [data-theme="dark"] & {
+    .team-card {
+      background: #2a2a2a;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+      &:hover {
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+      }
+
+      .member-name {
+        color: #e0e0e0;
+      }
+
+      .member-role {
+        color: #b0b0b0;
+      }
+
+      .member-photo {
+        border-color: #444;
+      }
+
+      .member-description {
+        color: #c0c0c0;
+      }
+    }
+
+    .project-description h2,
+    .team-section h2 {
+      color: #e0e0e0;
+    }
+
+    .project-description p {
+      color: #b0b0b0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+
+    .about-container {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .about-content {
+        padding: 2rem;
+
+        p {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}

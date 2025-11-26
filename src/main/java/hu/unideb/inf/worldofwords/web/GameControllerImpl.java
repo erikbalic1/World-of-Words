@@ -19,6 +19,7 @@ public class GameControllerImpl implements GameController{
      */
     @Override
     public ResponseEntity<Integer> submit(@NonNull GameResultDTO givenResult) {
+        System.out.println(givenResult);
         return ResponseEntity.ok(gameService.submit(givenResult));
     }
 

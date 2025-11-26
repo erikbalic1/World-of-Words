@@ -15,6 +15,4 @@ public interface LeaderboardService {
 
     void deleteByPlayerName(String playerName);
 
-    void deleteAll();
-
 }

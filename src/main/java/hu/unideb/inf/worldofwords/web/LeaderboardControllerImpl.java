@@ -36,10 +36,5 @@ public class LeaderboardControllerImpl implements LeaderboardController{
         return ResponseEntity.noContent().build();
     }
 
-    @Override
-    public ResponseEntity<Void> deleteAllLeaderboardEntries() {
-        service.deleteAll();
-        return ResponseEntity.noContent().build();
-    }
 
 }

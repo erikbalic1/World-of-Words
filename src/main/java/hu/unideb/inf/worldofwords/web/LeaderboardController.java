@@ -23,7 +23,4 @@ public interface LeaderboardController {
     @DeleteMapping("/player")
     ResponseEntity<Void> deleteLeaderboardEntry(@RequestParam String name);
 
-    @DeleteMapping
-    ResponseEntity<Void> deleteAllLeaderboardEntries();
-
 }
