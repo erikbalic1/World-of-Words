@@ -1,0 +1,256 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ master, main, develop ]
+    paths:
+      - 'client/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [ master, main, develop ]
+    paths:
+      - 'client/**'
+      - '.github/workflows/frontend-ci.yml'
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Run ESLint
+        working-directory: ./client
+        run: npm run lint
+        continue-on-error: false
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Build project
+        working-directory: ./client
+        run: npm run build
+        env:
+          CI: true
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: client/dist
+          retention-days: 7
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Run tests
+        working-directory: ./client
+        run: npm test -- --run --reporter=verbose
+        continue-on-error: false
+        if: hashFiles('client/src/**/*.test.jsx', 'client/src/**/*.test.js') != ''
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Run npm audit
+        working-directory: ./client
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+  dependency-check:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Check for outdated packages
+        working-directory: ./client
+        run: npm outdated || true
+      
+      - name: List installed packages
+        working-directory: ./client
+        run: npm list --depth=0
+
+  build-matrix:
+    name: Build on Multiple Node Versions
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Build project
+        working-directory: ./client
+        run: npm run build
+        env:
+          CI: true
+
+  preview:
+    name: Preview Build
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Build for preview
+        working-directory: ./client
+        run: npm run build
+      
+      - name: Comment PR with preview info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ Frontend build completed successfully! Build artifacts are ready for deployment.'
+            })
+
+  deployment-ready:
+    name: Deployment Ready Check
+    runs-on: ubuntu-latest
+    needs: [lint, build, security-audit, dependency-check]
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      
+      - name: Production build
+        working-directory: ./client
+        run: npm run build
+        env:
+          CI: true
+          NODE_ENV: production
+      
+      - name: Check build size
+        working-directory: ./client
+        run: |
+          echo "Build size:"
+          du -sh dist/
+          echo "Detailed breakdown:"
+          du -h dist/* | sort -rh | head -20
+      
+      - name: Create deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: client/dist
+          retention-days: 30
+      
+      - name: Deployment summary
+        run: |
+          echo "🚀 Production build is ready for deployment!"
+          echo "Build artifacts have been uploaded and are ready to be deployed to your hosting platform."
