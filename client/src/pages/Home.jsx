@@ -4,7 +4,7 @@ import '../styles/home.scss'
 
 export default function Home() {
   // Simulate user state - replace with actual auth context
-  const [user, setUser] = useState(null) // Change to { name: 'John' } to test logged-in state
+  const [user] = useState(null) // Change to { name: 'John' } to test logged-in state
 
   return (
     <div className="home">
